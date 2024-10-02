@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="pt-BR">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Consumir API em Node.js</title>
+        <link rel="stylesheet" href="style.css" />
+    </head>
+    <body>
+        <div class="container">
+            <h1>Criptografia e Descriptografia</h1>
+
+            <div class="section">
+                <h2>Criptografar Mensagem</h2>
+                <textarea
+                    id="message"
+                    placeholder="Digite sua mensagem..."
+                ></textarea>
+                <button id="encrypt-button">Criptografar</button>
+                <p id="encrypted-output"></p>
+            </div>
+
+            <div class="section">
+                <h2>Descriptografar Mensagem</h2>
+                <textarea
+                    id="encrypted-message"
+                    placeholder="Digite a mensagem criptografada..."
+                ></textarea>
+                <button id="decrypt-button">Descriptografar</button>
+                <p id="decrypted-output"></p>
+            </div>
+        </div>
+
+        <script>
+            const apiKey = "1234567890abcdef"; // A chave de API
+            const apiUrl =
+                "https://cc19026e-8d90-4445-9934-355eeca7df17-00-159h4uzbx33t7.picard.replit.dev"; // URL do seu servidor
+
+            // Evento para criptografar
+            document
+                .getElementById("encrypt-button")
+                .addEventListener("click", () => {
+                    const message = document.getElementById("message").value;
+
+                    fetch(`${apiUrl}/encrypt`, {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "x-api-key": apiKey, // Enviando a chave de API aqui
+                        },
+                        body: JSON.stringify({ message }),
+                    })
+                        .then((response) => {
+                            // Verifica se a resposta foi bem-sucedida
+                            if (!response.ok) {
+                                return response.json().then((err) => {
+                                    throw new Error(err.message);
+                                });
+                            }
+                            return response.json();
+                        })
+                        .then((data) => {
+                            document.getElementById(
+                                "encrypted-output",
+                            ).textContent =
+                                "Mensagem Criptografada: " +
+                                data.encryptedMessage;
+                        })
+                        .catch((error) => alert("Erro: " + error.message));
+                });
+
+            // Evento para descriptografar
+            document
+                .getElementById("decrypt-button")
+                .addEventListener("click", () => {
+                    const encryptedMessage =
+                        document.getElementById("encrypted-message").value;
+
+                    fetch(`${apiUrl}/decrypt`, {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "x-api-key": apiKey, // Enviando a chave de API aqui
+                        },
+                        body: JSON.stringify({ encryptedMessage }),
+                    })
+                        .then((response) => {
+                            // Verifica se a resposta foi bem-sucedida
+                            if (!response.ok) {
+                                return response.json().then((err) => {
+                                    throw new Error(err.message);
+                                });
+                            }
+                            return response.json();
+                        })
+                        .then((data) => {
+                            document.getElementById(
+                                "decrypted-output",
+                            ).textContent =
+                                "Mensagem Descriptografada: " +
+                                data.decryptedMessage;
+                        })
+                        .catch((error) => alert("Erro: " + error.message));
+                });
+        </script>
+    </body>
+</html>
